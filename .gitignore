@@ -1,0 +1,6 @@
+# State files
+.key-index
+.key-switch.lock
+
+# Backup files
+*.backup.*

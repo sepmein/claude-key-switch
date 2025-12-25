@@ -1,0 +1,243 @@
+#!/bin/sh
+
+# claude-key-switch: A simple tool to rotate API keys sequentially
+# Usage: ./claude-key-switch
+
+set -e
+
+# Constants
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+INDEX_FILE="$SCRIPT_DIR/.key-index"
+LOCK_FILE="$SCRIPT_DIR/.key-switch.lock"
+ENV_VAR_NAME="ANTHROPIC_AUTH_TOKEN"
+KEY_PREFIX="CLAUDE_KEY_"  # Environment variables will be CLAUDE_KEY_1, CLAUDE_KEY_2, etc.
+MARKER_START="# claude-key-switch START"
+MARKER_END="# claude-key-switch END"
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# Helper functions
+error() {
+    printf "${RED}Error: %s${NC}\n" "$1" >&2
+    exit 1
+}
+
+success() {
+    printf "${GREEN}%s${NC}\n" "$1"
+}
+
+info() {
+    printf "${YELLOW}%s${NC}\n" "$1"
+}
+
+# Show help message
+show_help() {
+    cat <<EOF
+claude-key-switch - Rotate through API keys sequentially
+
+USAGE:
+    ./claude-key-switch [OPTIONS]
+
+OPTIONS:
+    --help      Show this help message
+    --version   Show version information
+
+DESCRIPTION:
+    Each time you run this script, it switches to the next API key
+    from your environment variables and updates your shell configuration.
+
+SETUP:
+    1. Set environment variables with your API keys:
+       export CLAUDE_KEY_1='sk-ant-api03-your-first-key'
+       export CLAUDE_KEY_2='sk-ant-api03-your-second-key'
+       export CLAUDE_KEY_3='sk-ant-api03-your-third-key'
+
+    2. Add the exports to your shell config to make them permanent
+
+    3. Run: chmod +x claude-key-switch
+
+    4. Run: ./claude-key-switch
+
+ENVIRONMENT VARIABLES:
+    ${KEY_PREFIX}1, ${KEY_PREFIX}2, ${KEY_PREFIX}3, etc. - Your API keys
+
+    The script will update $ENV_VAR_NAME in your shell config
+    (~/.zshrc or ~/.bash_profile)
+
+FILES:
+    .key-index  - Current key index (auto-managed)
+
+EOF
+}
+
+# Parse command line arguments
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    show_help
+    exit 0
+fi
+
+if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
+    echo "claude-key-switch v1.0.0"
+    exit 0
+fi
+
+# Acquire lock to prevent concurrent execution (macOS compatible)
+# Use mkdir for atomic locking (POSIX compliant)
+if ! mkdir "$LOCK_FILE" 2>/dev/null; then
+    error "Script is already running. Please wait for it to complete."
+fi
+
+# Ensure lock is released on exit
+trap 'rmdir "$LOCK_FILE" 2>/dev/null' EXIT INT TERM
+
+# No file validation needed - keys come from environment variables
+
+# Read current index (default to -1 if missing or invalid)
+read_current_index() {
+    if [ -f "$INDEX_FILE" ]; then
+        INDEX=$(cat "$INDEX_FILE" 2>/dev/null || echo "-1")
+        # Validate it's a number
+        case "$INDEX" in
+            ''|*[!-0-9]*) echo "-1" ;;
+            *) echo "$INDEX" ;;
+        esac
+    else
+        echo "-1"
+    fi
+}
+
+# Write new index atomically
+write_index() {
+    local new_index="$1"
+    local tmp_file=$(mktemp)
+    echo "$new_index" > "$tmp_file"
+    mv "$tmp_file" "$INDEX_FILE"
+}
+
+# Count available keys from environment variables
+count_keys() {
+    local count=0
+    local i=1
+    while true; do
+        local var_name="${KEY_PREFIX}${i}"
+        eval "local val=\${${var_name}}"
+        if [ -z "$val" ]; then
+            break
+        fi
+        count=$((count + 1))
+        i=$((i + 1))
+    done
+    echo "$count"
+}
+
+# Get key at specific index (0-based index, 1-based env var)
+get_key_at_index() {
+    local index="$1"
+    local var_num=$((index + 1))
+    local var_name="${KEY_PREFIX}${var_num}"
+    eval "echo \"\${${var_name}}\""
+}
+
+# Detect shell config file
+detect_shell_config() {
+    # Check if running zsh
+    if [ -n "$ZSH_VERSION" ] && [ -f "$HOME/.zshrc" ]; then
+        echo "$HOME/.zshrc"
+    elif [ -f "$HOME/.bash_profile" ]; then
+        echo "$HOME/.bash_profile"
+    elif [ -f "$HOME/.bashrc" ]; then
+        echo "$HOME/.bashrc"
+    else
+        error "No shell config file found (~/.zshrc, ~/.bash_profile, or ~/.bashrc)"
+    fi
+}
+
+# Update shell config with new API key
+update_shell_config() {
+    local new_key="$1"
+    local config_file="$2"
+
+    # Create backup
+    local backup_file="${config_file}.backup.$(date +%s)"
+    cp "$config_file" "$backup_file" 2>/dev/null || touch "$config_file"
+
+    # Prepare the export line (use single quotes to prevent variable expansion)
+    local export_line="export ${ENV_VAR_NAME}='${new_key}'"
+
+    # Check if markers already exist
+    if grep -q "^${MARKER_START}" "$config_file" 2>/dev/null; then
+        # Markers exist - replace content between them
+        local tmp_file=$(mktemp)
+        awk -v start="$MARKER_START" -v end="$MARKER_END" -v export="$export_line" '
+            BEGIN { in_section=0 }
+            $0 ~ start {
+                print $0
+                print export
+                in_section=1
+                next
+            }
+            $0 ~ end {
+                print $0
+                in_section=0
+                next
+            }
+            !in_section { print }
+        ' "$config_file" > "$tmp_file"
+        mv "$tmp_file" "$config_file"
+    else
+        # Markers don't exist - append new section
+        cat >> "$config_file" <<EOF
+
+${MARKER_START}
+${export_line}
+${MARKER_END}
+EOF
+    fi
+
+    info "Backup created: $backup_file"
+}
+
+# Main logic
+main() {
+    # Read current state
+    current_index=$(read_current_index)
+    total_keys=$(count_keys)
+
+    if [ "$total_keys" -eq 0 ]; then
+        error "No API keys found. Set environment variables:\n  export CLAUDE_KEY_1='your-first-key'\n  export CLAUDE_KEY_2='your-second-key'"
+    fi
+
+    # Calculate next index with wrap-around
+    next_index=$(( (current_index + 1) % total_keys ))
+
+    # Get the key at next index
+    next_key=$(get_key_at_index "$next_index")
+
+    if [ -z "$next_key" ]; then
+        error "Failed to read key at index $next_index"
+    fi
+
+    # Detect shell config
+    config_file=$(detect_shell_config)
+
+    # Update shell config
+    update_shell_config "$next_key" "$config_file"
+
+    # Save new index
+    write_index "$next_index"
+
+    # Display success message
+    local key_number=$((next_index + 1))
+    success "✓ Switched to key ${key_number} of ${total_keys}"
+    info "Updated: $config_file"
+    info "Run 'source $config_file' or restart your terminal to apply changes"
+}
+
+# Run main logic
+main
+
+# Lock is automatically released by trap on exit
