@@ -1,6 +1,6 @@
 # claude-key-switch
 
-A production-ready macOS shell tool for rotating through multiple API keys sequentially using environment variables.
+A simple macOS shell tool for rotating through multiple API keys sequentially using environment variables.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Shell: POSIX](https://img.shields.io/badge/Shell-POSIX-green.svg)](https://en.wikipedia.org/wiki/POSIX)
