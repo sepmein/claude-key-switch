@@ -28,6 +28,7 @@ Run the interactive installer:
 ```
 
 The installer will:
+
 - Let you choose your shell (bash or zsh)
 - Guide you through adding API keys
 - Set up everything automatically
