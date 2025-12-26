@@ -1,10 +1,12 @@
 # claude-key-switch
 
-A simple macOS shell tool for rotating through multiple API keys sequentially using environment variables.
+A cross-platform tool for rotating through multiple API keys sequentially using environment variables. Works on macOS (POSIX shell) and Windows (PowerShell).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Shell: POSIX](https://img.shields.io/badge/Shell-POSIX-green.svg)](https://en.wikipedia.org/wiki/POSIX)
 [![Platform: macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
+[![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
+[![PowerShell: 5.1+](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://github.com/PowerShell/PowerShell)
 
 ## 🎯 Features
 
@@ -19,7 +21,31 @@ A simple macOS shell tool for rotating through multiple API keys sequentially us
 
 ## 🚀 Quick Start
 
-### Installation
+### Package Manager Installation (Recommended)
+
+**macOS/Linux (Homebrew):**
+```bash
+brew tap anthropics/claude-key-switch
+brew install claude-key-switch
+
+# The installer runs automatically!
+# Just follow the prompts to add your API keys
+```
+
+**Windows (Scoop):**
+```powershell
+scoop bucket add anthropics https://github.com/anthropics/scoop-bucket
+scoop install claude-key-switch
+
+# The installer runs automatically!
+# Just follow the prompts to add your API keys
+```
+
+> **Note:** The interactive installer runs automatically during package installation. You'll be prompted to enter your API keys as part of the installation process.
+
+### Manual Installation
+
+**macOS/Linux:**
 
 Run the interactive installer:
 
@@ -33,6 +59,12 @@ The installer will:
 - Guide you through adding API keys
 - Set up everything automatically
 - Create a convenient `switch-key` alias
+
+**Windows:**
+
+```powershell
+.\Install-ClaudeKeySwitch.ps1
+```
 
 ### Usage
 
@@ -48,6 +80,83 @@ switch-key
 ```
 
 That's it! Each run switches to the next key automatically.
+
+---
+
+## 🪟 Windows Support
+
+**claude-key-switch** now supports Windows via PowerShell!
+
+### Windows Quick Start
+
+**Prerequisites:**
+- PowerShell 5.1 or later (pre-installed on Windows 10/11)
+- PowerShell 7+ recommended for best performance
+
+**Installation:**
+
+```powershell
+# Run the interactive installer
+.\Install-ClaudeKeySwitch.ps1
+```
+
+**Usage:**
+
+```powershell
+# Using the alias (recommended)
+switch-key
+
+# Or run the script directly
+.\claude-key-switch.ps1
+
+# View help
+Get-Help .\claude-key-switch.ps1 -Full
+```
+
+### Windows-Specific Notes
+
+#### PowerShell Execution Policy
+
+If you encounter an "execution policy" error, run PowerShell as Administrator and execute:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+This allows locally-created scripts to run while still requiring remote scripts to be signed.
+
+#### Profile Locations
+
+PowerShell profiles are stored in:
+- **PowerShell 5.1**: `$HOME\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`
+- **PowerShell 7+**: `$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1`
+
+The installer automatically detects and configures the appropriate profile.
+
+#### Environment Variable Persistence
+
+Unlike macOS/Linux, Windows environment variables can be stored in the registry for system-wide persistence. However, **claude-key-switch** stores keys in your PowerShell profile for session-level security.
+
+To persist variables permanently (optional):
+
+```powershell
+[Environment]::SetEnvironmentVariable("CLAUDE_KEY_1", "your-key", "User")
+```
+
+### Platform Comparison
+
+| Feature | macOS/Linux (POSIX) | Windows (PowerShell) |
+|---------|-------------------|---------------------|
+| **Main Script** | `claude-key-switch` | `claude-key-switch.ps1` |
+| **Installer** | `install.sh` | `Install-ClaudeKeySwitch.ps1` |
+| **Config File** | `~/.zshrc` or `~/.bash_profile` | `$PROFILE` (auto-detected) |
+| **Locking** | Directory-based (`mkdir`) | Directory-based (`New-Item`) |
+| **State File** | `.key-index` (shared) | `.key-index` (shared) |
+| **Key Storage** | Environment variables | Environment variables |
+| **Alias** | `switch-key` | `switch-key` |
+| **Backup Pattern** | `*.backup.*` | `*.backup-*` |
+
+**Cross-Platform Note:** Both versions share the same `.key-index` file, allowing seamless switching between WSL (Linux) and Windows PowerShell on the same machine!
 
 ---
 
@@ -68,10 +177,50 @@ That's it! Each run switches to the next key automatically.
 
 ## 📦 Installation
 
-### Option 1: Interactive Installer (Recommended)
+### Option 1: Package Manager (Recommended)
+
+**macOS/Linux via Homebrew:**
+
+```bash
+# Add the tap
+brew tap anthropics/claude-key-switch
+
+# Install (installer runs automatically)
+brew install claude-key-switch
+```
+
+The interactive installer will run automatically and guide you through:
+- Choosing your shell (bash or zsh)
+- Adding your API keys
+- Creating a convenient `switch-key` alias
+
+**Windows via Scoop:**
+
+```powershell
+# Add the bucket
+scoop bucket add anthropics https://github.com/anthropics/scoop-bucket
+
+# Install (installer runs automatically)
+scoop install claude-key-switch
+```
+
+The interactive installer will run automatically and guide you through:
+- Choosing your PowerShell profile
+- Adding your API keys
+- Creating a convenient `switch-key` alias
+
+### Option 2: Interactive Installer (Manual)
+
+**macOS/Linux:**
 
 ```bash
 ./install.sh
+```
+
+**Windows:**
+
+```powershell
+.\Install-ClaudeKeySwitch.ps1
 ```
 
 **Demo:**
@@ -96,7 +245,9 @@ That's it! Each run switches to the next key automatically.
 ✓ Successfully installed claude-key-switch
 ```
 
-### Option 2: Manual Setup
+### Option 3: Manual Setup (Advanced)
+
+**macOS/Linux:**
 
 Add API keys to your shell configuration:
 
@@ -119,6 +270,26 @@ Make the script executable:
 
 ```bash
 chmod +x claude-key-switch
+```
+
+**Windows:**
+
+Add API keys to your PowerShell profile:
+
+```powershell
+# Add to your PowerShell profile
+notepad $PROFILE
+
+# Add these lines:
+$env:CLAUDE_KEY_1 = 'sk-ant-api03-xxx-your-first-key'
+$env:CLAUDE_KEY_2 = 'sk-ant-api03-yyy-your-second-key'
+$env:CLAUDE_KEY_3 = 'sk-ant-api03-zzz-your-third-key'
+```
+
+Reload your profile:
+
+```powershell
+. $PROFILE
 ```
 
 ---
@@ -519,12 +690,12 @@ A: Yes. The lock mechanism prevents concurrent execution, ensuring safe operatio
 
 | Metric | Value |
 |--------|-------|
-| **Language** | POSIX Shell |
-| **Lines of Code** | ~400 |
+| **Language** | POSIX Shell + PowerShell |
+| **Lines of Code** | ~800 (400 POSIX + 400 PowerShell) |
 | **Dependencies** | None |
-| **Platform** | macOS |
-| **Shell Support** | bash, zsh |
-| **Script Size** | 6.1 KB (main), 8.1 KB (installer) |
+| **Platform** | macOS, Windows |
+| **Shell Support** | bash, zsh, PowerShell 5.1+ |
+| **Script Size** | POSIX: 6.1 KB (main), 8.1 KB (installer)<br>PowerShell: 11.2 KB (main), 13.8 KB (installer) |
 
 ---
 
@@ -589,8 +760,8 @@ Issues and improvements welcome! This is a simple tool designed to stay simple.
 ---
 
 **Created for:** Managing multiple Anthropic API keys via environment variables
-**Platform:** macOS
-**Shell:** POSIX sh (compatible with bash and zsh)
+**Platform:** macOS (POSIX sh), Windows (PowerShell 5.1+)
+**Shell:** bash, zsh, PowerShell
 **Version:** 1.0.0
 
 ---

@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "description": "Rotate through multiple API keys sequentially",
+  "homepage": "https://github.com/anthropics/claude-key-switch",
+  "license": "MIT",
+  "url": "https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.zip",
+  "hash": "",
+  "extract_dir": "claude-key-switch-1.0.0",
+  "bin": [
+    "claude-key-switch.ps1",
+    "Install-ClaudeKeySwitch.ps1"
+  ],
+  "shortcuts": [
+    [
+      "claude-key-switch.ps1",
+      "Claude Key Switch"
+    ]
+  ],
+  "post_install": [
+    "Write-Host ''",
+    "Write-Host 'claude-key-switch has been installed!' -ForegroundColor Green",
+    "Write-Host 'Running the interactive installer...' -ForegroundColor Yellow",
+    "Write-Host ''",
+    "& \"$dir\\Install-ClaudeKeySwitch.ps1\"",
+    "Write-Host ''",
+    "Write-Host 'Installation complete!' -ForegroundColor Green",
+    "Write-Host ''",
+    "Write-Host 'If you need to reconfigure later:' -ForegroundColor Yellow",
+    "Write-Host '  Install-ClaudeKeySwitch.ps1' -ForegroundColor Cyan",
+    "Write-Host ''",
+    "Write-Host 'Start using it:' -ForegroundColor Yellow",
+    "Write-Host '  claude-key-switch.ps1' -ForegroundColor Cyan",
+    "Write-Host '  or use the alias: switch-key' -ForegroundColor Cyan",
+    "Write-Host ''"
+  ],
+  "checkver": {
+    "github": "https://github.com/anthropics/claude-key-switch"
+  },
+  "autoupdate": {
+    "url": "https://github.com/anthropics/claude-key-switch/archive/refs/tags/v$version.zip",
+    "extract_dir": "claude-key-switch-$version"
+  }
+}

@@ -4,3 +4,8 @@
 
 # Backup files
 *.backup.*
+*.backup-*
+
+# PowerShell backup files
+*.ps1.backup.*
+*.ps1.backup-*
