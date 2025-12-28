@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add -A)"
+      "Bash(git add -A)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Windows support and package manager integration\n\nImplement cross-platform support with PowerShell scripts for Windows and add automated installation via Homebrew and Scoop package managers.\n\nNew Features:\n- PowerShell scripts \\(claude-key-switch.ps1, Install-ClaudeKeySwitch.ps1\\) with full feature parity\n- Homebrew formula with auto-installer for macOS/Linux\n- Scoop manifest with auto-installer for Windows\n- Shared .key-index state file for WSL/Windows compatibility\n\nTechnical Implementation:\n- Directory-based locking using try/finally blocks in PowerShell\n- Atomic file operations with temp files\n- Marker-based idempotent profile updates\n- PowerShell profile auto-detection \\($PROFILE\\)\n- UTF-8 encoding for cross-platform compatibility\n\nDocumentation:\n- Comprehensive Windows Quick Start guide in README\n- PowerShell development guidelines in CLAUDE.md\n- Package manager publishing guide \\(PACKAGING.md\\)\n- Platform comparison tables\n- Updated .gitignore for PowerShell backup files\n\nPackage Managers:\n- Homebrew: post_install hook runs installer automatically\n- Scoop: post_install hook runs installer automatically\n- One-command installation with guided setup\n\nThis enables developers on both macOS/Linux and Windows to easily rotate API keys with a unified experience across platforms.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

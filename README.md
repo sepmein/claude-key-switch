@@ -25,7 +25,7 @@ A cross-platform tool for rotating through multiple API keys sequentially using 
 
 **macOS/Linux (Homebrew):**
 ```bash
-brew tap anthropics/claude-key-switch
+brew tap sepmein/claude-key-switch
 brew install claude-key-switch
 
 # The installer runs automatically!
@@ -34,7 +34,7 @@ brew install claude-key-switch
 
 **Windows (Scoop):**
 ```powershell
-scoop bucket add anthropics https://github.com/anthropics/scoop-bucket
+scoop bucket add sepmein https://github.com/sepmein/scoop-bucket
 scoop install claude-key-switch
 
 # The installer runs automatically!
@@ -183,7 +183,7 @@ To persist variables permanently (optional):
 
 ```bash
 # Add the tap
-brew tap anthropics/claude-key-switch
+brew tap sepmein/claude-key-switch
 
 # Install (installer runs automatically)
 brew install claude-key-switch

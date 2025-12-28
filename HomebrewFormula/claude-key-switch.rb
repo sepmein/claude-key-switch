@@ -1,7 +1,7 @@
 class ClaudeKeySwitch < Formula
   desc "Rotate through multiple API keys sequentially"
-  homepage "https://github.com/anthropics/claude-key-switch"
-  url "https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.tar.gz"
+  homepage "https://github.com/sepmein/claude-key-switch"
+  url "https://github.com/sepmein/claude-key-switch/archive/refs/tags/v1.0.0.tar.gz"
   sha256 "" # Will be calculated when creating a release
   license "MIT"
   version "1.0.0"

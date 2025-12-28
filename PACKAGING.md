@@ -9,7 +9,7 @@ This guide explains how to publish claude-key-switch to various package managers
 Once published, users can install with:
 
 ```bash
-brew tap anthropics/claude-key-switch
+brew tap sepmein/claude-key-switch
 brew install claude-key-switch
 ```
 
@@ -46,14 +46,14 @@ brew install claude-key-switch
 
 4. Calculate SHA256 hash:
    ```bash
-   curl -L https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.tar.gz | shasum -a 256
+   curl -L https://github.com/sepmein/claude-key-switch/archive/refs/tags/v1.0.0.tar.gz | shasum -a 256
    ```
 
 5. Update formula with correct SHA256 hash
 
 6. Users can install with:
    ```bash
-   brew tap anthropics/claude-key-switch
+   brew tap sepmein/claude-key-switch
    brew install claude-key-switch
    ```
 
@@ -76,7 +76,7 @@ The formula file is located at: `HomebrewFormula/claude-key-switch.rb`
 Once published, users can install with:
 
 ```powershell
-scoop bucket add anthropics https://github.com/anthropics/scoop-bucket
+scoop bucket add sepmein https://github.com/sepmein/scoop-bucket
 scoop install claude-key-switch
 ```
 
@@ -107,7 +107,7 @@ scoop install claude-key-switch
 
 4. Calculate SHA256 hash:
    ```powershell
-   curl -L https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.zip -o temp.zip
+   curl -L https://github.com/sepmein/claude-key-switch/archive/refs/tags/v1.0.0.zip -o temp.zip
    (Get-FileHash temp.zip -Algorithm SHA256).Hash.ToLower()
    Remove-Item temp.zip
    ```
@@ -189,10 +189,10 @@ Before creating a release:
 - [ ] Calculate SHA256 hashes:
   ```bash
   # For Homebrew (.tar.gz)
-  curl -L https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.tar.gz | shasum -a 256
+  curl -L https://github.com/sepmein/claude-key-switch/archive/refs/tags/v1.0.0.tar.gz | shasum -a 256
 
   # For Scoop (.zip)
-  curl -L https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.zip | shasum -a 256
+  curl -L https://github.com/sepmein/claude-key-switch/archive/refs/tags/v1.0.0.zip | shasum -a 256
   ```
 
 - [ ] Update formula/manifest with correct SHA256 hashes

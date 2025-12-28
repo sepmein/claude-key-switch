@@ -12,7 +12,7 @@
     Platform: Windows (PowerShell 5.1+)
 
 .LINK
-    https://github.com/anthropics/claude-key-switch
+    https://github.com/sepmein/claude-key-switch
 #>
 
 # ============================================================================

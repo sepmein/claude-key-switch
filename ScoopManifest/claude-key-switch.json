@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
   "description": "Rotate through multiple API keys sequentially",
-  "homepage": "https://github.com/anthropics/claude-key-switch",
+  "homepage": "https://github.com/sepmein/claude-key-switch",
   "license": "MIT",
-  "url": "https://github.com/anthropics/claude-key-switch/archive/refs/tags/v1.0.0.zip",
+  "url": "https://github.com/sepmein/claude-key-switch/archive/refs/tags/v1.0.0.zip",
   "hash": "",
   "extract_dir": "claude-key-switch-1.0.0",
   "bin": [
@@ -34,10 +34,10 @@
     "Write-Host ''"
   ],
   "checkver": {
-    "github": "https://github.com/anthropics/claude-key-switch"
+    "github": "https://github.com/sepmein/claude-key-switch"
   },
   "autoupdate": {
-    "url": "https://github.com/anthropics/claude-key-switch/archive/refs/tags/v$version.zip",
+    "url": "https://github.com/sepmein/claude-key-switch/archive/refs/tags/v$version.zip",
     "extract_dir": "claude-key-switch-$version"
   }
 }
